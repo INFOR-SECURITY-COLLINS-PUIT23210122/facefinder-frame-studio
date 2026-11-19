@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AnnotatedImage } from "@/components/face/AnnotatedImage";
 import { CameraCapture } from "@/components/face/CameraCapture";
+import { ExplainPanel } from "@/components/face/ExplainPanel";
 import { ImageDropzone } from "@/components/face/ImageDropzone";
 import { ThemeToggle } from "@/components/face/ThemeToggle";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -249,7 +250,9 @@ function Index() {
                   )}
                   <span className="ml-auto truncate font-mono text-xs text-muted-foreground">
                     {natural ? `${natural.width}×${natural.height}` : ""} ·{" "}
-                    {file.size < 1024 * 1024 ? `${Math.round(file.size / 1024)} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
+                    {file.size < 1024 * 1024
+                      ? `${Math.round(file.size / 1024)} KB`
+                      : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
                   </span>
                 </div>
               </>
@@ -370,6 +373,16 @@ function Index() {
                   </div>
                 )}
 
+                {preview && natural && (
+                  <ExplainPanel
+                    key={rawJson ?? "none"}
+                    src={preview}
+                    natural={natural}
+                    predictions={visible}
+                    threshold={threshold}
+                  />
+                )}
+
                 {rawJson && (
                   <details className="rounded-lg border border-border text-sm">
                     <summary className="cursor-pointer px-4 py-2 font-medium text-muted-foreground">
@@ -397,16 +410,18 @@ function Index() {
           <div className="space-y-2 text-sm">
             <h3 className="font-semibold">What it predicts</h3>
             <p className="text-muted-foreground">
-              A custom YOLO detection model trained on Ultralytics finds faces in a photo. For each face it returns
-              the class it was trained to recognise, a confidence score and a bounding box in pixel coordinates.
+              A custom YOLO detection model trained on Ultralytics finds faces in a photo. For each
+              face it returns the class it was trained to recognise, a confidence score and a
+              bounding box in pixel coordinates.
             </p>
           </div>
           <div className="space-y-2 text-sm">
             <h3 className="font-semibold">Limitations</h3>
             <p className="text-muted-foreground">
-              It can only answer with the classes it was trained on, so an unknown face may still get one of those
-              labels — it is not a reliable identity check. Accuracy drops with poor lighting, blur, unusual angles, small
-              or covered faces, and people unlike those in its training photos. Treat results as estimates, not facts.
+              It can only answer with the classes it was trained on, so an unknown face may still
+              get one of those labels — it is not a reliable identity check. Accuracy drops with
+              poor lighting, blur, unusual angles, small or covered faces, and people unlike those
+              in its training photos. Treat results as estimates, not facts.
             </p>
           </div>
         </section>

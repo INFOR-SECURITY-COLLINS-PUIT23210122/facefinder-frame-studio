@@ -34,3 +34,5 @@ use the editor.
 - Ultralytics inference runs only in the `predict` server function (`src/lib/predict.functions.ts`), reading `ULTRALYTICS_API_KEY` / `ULTRALYTICS_ENDPOINT` from env — keeps credentials out of the browser bundle.
 - Response mapping lives in `src/lib/predictions.ts` (`parsePredictions`) with tests beside it — one place to adapt if the API shape changes.
 - Uploaded images are never persisted (no storage bucket or table) — the app promises users it does not store them.
+- AI explanations run only in `explainDetections` (`src/lib/explain.functions.ts`) via `@lovable.dev/ai-gateway`, with prompt, input schema and output schema in `src/lib/explain.ts` — the no-identification rules live in one tested place.
+- The image sent for AI explanation is a downscaled JPEG with numbered boxes only (no class names drawn) — limits payload size and avoids nudging the model toward identities.
