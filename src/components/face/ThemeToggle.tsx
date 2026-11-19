@@ -21,7 +21,12 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button variant="outline" size="icon" onClick={toggle} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}>
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={toggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
       {dark ? <Sun /> : <Moon />}
     </Button>
   );

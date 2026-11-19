@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Ultralytics inference runs only in the `predict` server function (`src/lib/predict.functions.ts`), reading `ULTRALYTICS_API_KEY` / `ULTRALYTICS_ENDPOINT` from env — keeps credentials out of the browser bundle.
+- Response mapping lives in `src/lib/predictions.ts` (`parsePredictions`) with tests beside it — one place to adapt if the API shape changes.
+- Uploaded images are never persisted (no storage bucket or table) — the app promises users it does not store them.

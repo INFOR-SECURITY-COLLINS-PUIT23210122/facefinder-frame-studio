@@ -6,7 +6,11 @@ function cssColor(name: string, fallback: string) {
 }
 
 /** Render the image with its boxes at full resolution and download it as PNG. */
-export async function downloadAnnotated(src: string, predictions: Prediction[], filename = "face-prediction.png") {
+export async function downloadAnnotated(
+  src: string,
+  predictions: Prediction[],
+  filename = "face-prediction.png",
+) {
   const img = new Image();
   img.src = src;
   await img.decode();

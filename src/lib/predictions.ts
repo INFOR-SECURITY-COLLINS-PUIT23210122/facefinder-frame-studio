@@ -23,29 +23,31 @@ function findDetections(raw: unknown): unknown[] {
   if (Array.isArray(raw)) return raw;
   if (!isObj(raw)) return [];
   // Ultralytics Platform: { images: [{ results: [...] }] }
-  if (Array.isArray(raw.images)) {
-    return raw.images.flatMap((img) => (isObj(img) && Array.isArray(img.results) ? img.results : []));
+  if (Array.isArray(raw["images"])) {
+    return raw["images"].flatMap((img) =>
+      isObj(img) && Array.isArray(img["results"]) ? img["results"] : [],
+    );
   }
   // Legacy HUB API: { data: [...] } or { data: { results: [...] } }
-  if (Array.isArray(raw.data)) return raw.data;
-  if (isObj(raw.data)) return findDetections(raw.data);
-  if (Array.isArray(raw.results)) return raw.results;
-  if (Array.isArray(raw.predictions)) return raw.predictions;
+  if (Array.isArray(raw["data"])) return raw["data"];
+  if (isObj(raw["data"])) return findDetections(raw["data"]);
+  if (Array.isArray(raw["results"])) return raw["results"];
+  if (Array.isArray(raw["predictions"])) return raw["predictions"];
   return [];
 }
 
 function readBox(d: Record<string, unknown>): Box | null {
-  const b = d.box ?? d.bbox ?? d.xyxy;
+  const b = d["box"] ?? d["bbox"] ?? d["xyxy"];
   if (Array.isArray(b) && b.length >= 4) {
     const [x1, y1, x2, y2] = b.map(num);
-    if (x1 !== null && y1 !== null && x2 !== null && y2 !== null) return { x1, y1, x2, y2 };
+    if (x1 != null && y1 != null && x2 != null && y2 != null) return { x1, y1, x2, y2 };
     return null;
   }
   const src = isObj(b) ? b : d;
-  const x1 = num(src.x1 ?? src.xmin ?? src.left);
-  const y1 = num(src.y1 ?? src.ymin ?? src.top);
-  const x2 = num(src.x2 ?? src.xmax ?? src.right);
-  const y2 = num(src.y2 ?? src.ymax ?? src.bottom);
+  const x1 = num(src["x1"] ?? src["xmin"] ?? src["left"]);
+  const y1 = num(src["y1"] ?? src["ymin"] ?? src["top"]);
+  const x2 = num(src["x2"] ?? src["xmax"] ?? src["right"]);
+  const y2 = num(src["y2"] ?? src["ymax"] ?? src["bottom"]);
   if (x1 !== null && y1 !== null && x2 !== null && y2 !== null) return { x1, y1, x2, y2 };
   return null;
 }
@@ -60,16 +62,23 @@ export function parsePredictions(raw: unknown, imageSize?: Size): Prediction[] {
     if (!isObj(d)) return;
     const box = readBox(d);
     if (!box) return;
-    let confidence = num(d.confidence ?? d.conf ?? d.score) ?? 0;
+    let confidence = num(d["confidence"] ?? d["conf"] ?? d["score"]) ?? 0;
     if (confidence > 1) confidence = confidence / 100;
     confidence = Math.min(1, Math.max(0, confidence));
-    const classId = num(d.class ?? d.class_id ?? d.classId);
+    const classId = num(d["class"] ?? d["class_id"] ?? d["classId"]);
     const name =
-      typeof d.name === "string" ? d.name : typeof d.label === "string" ? d.label : classId !== null ? `class ${classId}` : "object";
+      typeof d["name"] === "string"
+        ? d["name"]
+        : typeof d["label"] === "string"
+          ? d["label"]
+          : classId !== null
+            ? `class ${classId}`
+            : "object";
     out.push({ id: out.length, name, classId, confidence, box });
   });
 
-  const normalized = out.length > 0 && out.every((p) => Math.max(p.box.x1, p.box.y1, p.box.x2, p.box.y2) <= 1);
+  const normalized =
+    out.length > 0 && out.every((p) => Math.max(p.box.x1, p.box.y1, p.box.x2, p.box.y2) <= 1);
   if (normalized && imageSize) {
     for (const p of out) {
       p.box = {

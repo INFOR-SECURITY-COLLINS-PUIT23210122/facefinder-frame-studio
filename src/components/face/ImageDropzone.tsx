@@ -7,7 +7,8 @@ const ACCEPTED = ["image/jpeg", "image/png"];
 
 export function validateImage(file: File): string | null {
   if (!ACCEPTED.includes(file.type)) return "Please choose a JPG or PNG image.";
-  if (file.size > MAX_IMAGE_BYTES) return "That image is larger than 10 MB. Please choose a smaller one.";
+  if (file.size > MAX_IMAGE_BYTES)
+    return "That image is larger than 10 MB. Please choose a smaller one.";
   return null;
 }
 
@@ -25,30 +26,34 @@ export function ImageDropzone({ onFile, onError }: Props) {
   };
 
   return (
-    <button
-      type="button"
-      onClick={() => inputRef.current?.click()}
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragging(false);
-        handle(e.dataTransfer.files?.[0]);
-      }}
-      className={cn(
-        "dot-grid group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors",
-        "hover:border-primary focus-visible:border-primary focus-visible:outline-none",
-        dragging && "border-primary bg-accent",
-      )}
-    >
-      <span className="flex size-14 items-center justify-center rounded-full bg-card text-primary shadow-panel transition-transform group-hover:-translate-y-0.5">
-        <ImageUp className="size-6" />
-      </span>
-      <span className="font-display text-lg font-medium">Drop a photo here</span>
-      <span className="text-sm text-muted-foreground">or click to browse · JPG or PNG · up to 10 MB</span>
+    <>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          handle(e.dataTransfer.files?.[0]);
+        }}
+        className={cn(
+          "dot-grid group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors",
+          "hover:border-primary focus-visible:border-primary focus-visible:outline-none",
+          dragging && "border-primary bg-accent",
+        )}
+      >
+        <span className="flex size-14 items-center justify-center rounded-full bg-card text-primary shadow-panel transition-transform group-hover:-translate-y-0.5">
+          <ImageUp className="size-6" />
+        </span>
+        <span className="font-display text-lg font-medium">Drop a photo here</span>
+        <span className="text-sm text-muted-foreground">
+          or click to browse · JPG or PNG · up to 10 MB
+        </span>
+      </button>
       <input
         ref={inputRef}
         type="file"
@@ -59,6 +64,6 @@ export function ImageDropzone({ onFile, onError }: Props) {
           e.target.value = "";
         }}
       />
-    </button>
+    </>
   );
 }

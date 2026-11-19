@@ -1,6 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertCircle, Camera, Download, ImageUp, Loader2, RotateCcw, ScanFace, ShieldCheck, Sparkles, X } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  Download,
+  ImageUp,
+  Loader2,
+  RotateCcw,
+  ScanFace,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AnnotatedImage } from "@/components/face/AnnotatedImage";
@@ -11,11 +22,23 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { downloadAnnotated } from "@/lib/annotate";
 import { predict } from "@/lib/predict.functions";
-import { filterByConfidence, formatPercent, parsePredictions, type Prediction } from "@/lib/predictions";
+import {
+  filterByConfidence,
+  formatPercent,
+  parsePredictions,
+  type Prediction,
+} from "@/lib/predictions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,12 +46,14 @@ export const Route = createFileRoute("/")({
       { title: "Face Prediction — Detect faces in a photo" },
       {
         name: "description",
-        content: "Upload or capture a photo and see face detections with bounding boxes and confidence scores.",
+        content:
+          "Upload or capture a photo and see face detections with bounding boxes and confidence scores.",
       },
       { property: "og:title", content: "Face Prediction — Detect faces in a photo" },
       {
         property: "og:description",
-        content: "Upload or capture a photo and see face detections with bounding boxes and confidence scores.",
+        content:
+          "Upload or capture a photo and see face detections with bounding boxes and confidence scores.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -37,7 +62,8 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const PRIVACY_NOTICE = "Images are sent to a third-party API for analysis and are not stored by this app.";
+const PRIVACY_NOTICE =
+  "Images are sent to a third-party API for analysis and are not stored by this app.";
 
 type Status = "idle" | "loading" | "done" | "error";
 
@@ -65,7 +91,10 @@ function Index() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  const visible = useMemo(() => filterByConfidence(predictions, threshold), [predictions, threshold]);
+  const visible = useMemo(
+    () => filterByConfidence(predictions, threshold),
+    [predictions, threshold],
+  );
 
   const resetResults = () => {
     setStatus("idle");
@@ -136,7 +165,9 @@ function Index() {
             </span>
             <div>
               <h1 className="text-lg font-semibold leading-tight">Face Prediction</h1>
-              <p className="text-xs text-muted-foreground">Face detection with your Ultralytics model</p>
+              <p className="text-xs text-muted-foreground">
+                Face detection with your Ultralytics model
+              </p>
             </div>
           </div>
           <ThemeToggle />
@@ -172,7 +203,9 @@ function Index() {
                 }}
               />
             )}
-            {!file && mode === "camera" && <CameraCapture onCapture={(f) => selectFile(f, "camera")} />}
+            {!file && mode === "camera" && (
+              <CameraCapture onCapture={(f) => selectFile(f, "camera")} />
+            )}
 
             {file && preview && (
               <>
@@ -184,7 +217,11 @@ function Index() {
                   onLoad={setNatural}
                 />
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button size="lg" onClick={runPredict} disabled={status === "loading" || !natural}>
+                  <Button
+                    size="lg"
+                    onClick={runPredict}
+                    disabled={status === "loading" || !natural}
+                  >
                     {status === "loading" ? <Loader2 className="animate-spin" /> : <Sparkles />}
                     {status === "loading" ? "Predicting…" : "Predict"}
                   </Button>
@@ -201,12 +238,18 @@ function Index() {
                       <RotateCcw /> Retake
                     </Button>
                   ) : (
-                    <Button variant="outline" size="lg" disabled={status === "loading"} onClick={clearImage}>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      disabled={status === "loading"}
+                      onClick={clearImage}
+                    >
                       <X /> Change photo
                     </Button>
                   )}
                   <span className="ml-auto truncate font-mono text-xs text-muted-foreground">
-                    {natural ? `${natural.width}×${natural.height}` : ""} · {(file.size / 1024 / 1024).toFixed(1)} MB
+                    {natural ? `${natural.width}×${natural.height}` : ""} ·{" "}
+                    {file.size < 1024 * 1024 ? `${Math.round(file.size / 1024)} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
                   </span>
                 </div>
               </>
@@ -224,7 +267,8 @@ function Index() {
               <h2 className="text-base font-semibold">2. Results</h2>
               {status === "done" && predictions.length > 0 && (
                 <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading}>
-                  {downloading ? <Loader2 className="animate-spin" /> : <Download />} Download annotated image
+                  {downloading ? <Loader2 className="animate-spin" /> : <Download />} Download
+                  annotated image
                 </Button>
               )}
             </div>
@@ -240,7 +284,11 @@ function Index() {
             {status === "idle" && !error && (
               <EmptyState
                 title={file ? "Ready when you are" : "No photo yet"}
-                text={file ? "Press Predict to find faces in this photo." : "Upload a photo or take one with your camera to get started."}
+                text={
+                  file
+                    ? "Press Predict to find faces in this photo."
+                    : "Upload a photo or take one with your camera to get started."
+                }
               />
             )}
 
@@ -266,18 +314,25 @@ function Index() {
                     max={1}
                     step={0.01}
                     value={[threshold]}
-                    onValueChange={([v]) => setThreshold(v)}
+                    onValueChange={([v]) => setThreshold(v ?? 0)}
                     aria-label="Confidence threshold"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Showing {visible.length} of {predictions.length} prediction{predictions.length === 1 ? "" : "s"}.
+                    Showing {visible.length} of {predictions.length} prediction
+                    {predictions.length === 1 ? "" : "s"}.
                   </p>
                 </div>
 
                 {predictions.length === 0 ? (
-                  <EmptyState title="No face detected" text="The model didn't find any face in this photo. Try a clearer, well-lit picture." />
+                  <EmptyState
+                    title="No face detected"
+                    text="The model didn't find any face in this photo. Try a clearer, well-lit picture."
+                  />
                 ) : visible.length === 0 ? (
-                  <EmptyState title="No face detected" text="All predictions are below the confidence threshold. Lower the slider to see them." />
+                  <EmptyState
+                    title="No face detected"
+                    text="All predictions are below the confidence threshold. Lower the slider to see them."
+                  />
                 ) : (
                   <div className="overflow-x-auto rounded-lg border border-border">
                     <Table>
@@ -293,11 +348,15 @@ function Index() {
                       <TableBody>
                         {visible.map((p, i) => (
                           <TableRow key={p.id}>
-                            <TableCell className="font-mono text-xs text-muted-foreground">{i + 1}</TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {i + 1}
+                            </TableCell>
                             <TableCell>
                               <Badge variant="secondary">{p.name}</Badge>
                             </TableCell>
-                            <TableCell className="font-mono text-sm">{formatPercent(p.confidence)}</TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {formatPercent(p.confidence)}
+                            </TableCell>
                             <TableCell className="text-right font-mono text-xs">
                               {Math.round(p.box.x1)}, {Math.round(p.box.y1)}
                             </TableCell>
@@ -313,8 +372,12 @@ function Index() {
 
                 {rawJson && (
                   <details className="rounded-lg border border-border text-sm">
-                    <summary className="cursor-pointer px-4 py-2 font-medium text-muted-foreground">Raw API response</summary>
-                    <pre className="max-h-64 overflow-auto border-t border-border bg-sunken p-4 font-mono text-xs">{rawJson}</pre>
+                    <summary className="cursor-pointer px-4 py-2 font-medium text-muted-foreground">
+                      Raw API response
+                    </summary>
+                    <pre className="max-h-64 overflow-auto border-t border-border bg-sunken p-4 font-mono text-xs">
+                      {rawJson}
+                    </pre>
                   </details>
                 )}
               </>
@@ -327,21 +390,23 @@ function Index() {
             <h2 id="about" className="text-xl font-semibold">
               About
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">How the model works and what to keep in mind.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              How the model works and what to keep in mind.
+            </p>
           </div>
           <div className="space-y-2 text-sm">
             <h3 className="font-semibold">What it predicts</h3>
             <p className="text-muted-foreground">
-              A YOLO object-detection model trained on Ultralytics finds faces in a photo. For each face it returns a class
-              label, a confidence score and a bounding box in pixel coordinates.
+              A custom YOLO detection model trained on Ultralytics finds faces in a photo. For each face it returns
+              the class it was trained to recognise, a confidence score and a bounding box in pixel coordinates.
             </p>
           </div>
           <div className="space-y-2 text-sm">
             <h3 className="font-semibold">Limitations</h3>
             <p className="text-muted-foreground">
-              It detects faces — it does not identify who someone is. Accuracy drops with poor lighting, blur, unusual angles,
-              small or covered faces, and people underrepresented in its training data. Treat results as estimates, not
-              facts.
+              It can only answer with the classes it was trained on, so an unknown face may still get one of those
+              labels — it is not a reliable identity check. Accuracy drops with poor lighting, blur, unusual angles, small
+              or covered faces, and people unlike those in its training photos. Treat results as estimates, not facts.
             </p>
           </div>
         </section>

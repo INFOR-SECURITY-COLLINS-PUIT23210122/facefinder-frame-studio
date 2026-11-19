@@ -3,18 +3,19 @@ import { createServerFn } from "@tanstack/react-start";
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
-export type PredictResult =
-  | { ok: true; rawText: string }
-  | { ok: false; error: string };
+export type PredictResult = { ok: true; rawText: string } | { ok: false; error: string };
 
 function friendlyStatusError(status: number): string {
   if (status === 401 || status === 403)
     return "The prediction service rejected the API key. Please check the saved key.";
-  if (status === 404) return "The prediction endpoint was not found. Please check the saved endpoint URL.";
+  if (status === 404)
+    return "The prediction endpoint was not found. Please check the saved endpoint URL.";
   if (status === 413) return "The image is too large for the prediction service.";
-  if (status === 422 || status === 400) return "The prediction service could not read this image. Try another JPG or PNG.";
+  if (status === 422 || status === 400)
+    return "The prediction service could not read this image. Try another JPG or PNG.";
   if (status === 429) return "Too many requests right now. Please wait a moment and try again.";
-  if (status >= 500) return "The prediction service is having trouble. Please try again in a minute.";
+  if (status >= 500)
+    return "The prediction service is having trouble. Please try again in a minute.";
   return `The prediction service returned an unexpected error (${status}).`;
 }
 

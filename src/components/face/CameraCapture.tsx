@@ -77,14 +77,21 @@ export function CameraCapture({ onCapture }: Props) {
   return (
     <div className="space-y-3">
       <div className="dot-grid relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg border border-border">
-        <video ref={videoRef} playsInline muted className="h-full w-full -scale-x-100 object-cover" />
+        <video
+          ref={videoRef}
+          playsInline
+          muted
+          className="h-full w-full -scale-x-100 object-cover"
+        />
         {status === "starting" && (
           <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" /> Starting camera…
           </div>
         )}
         {status === "error" && (
-          <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-destructive">{error}</div>
+          <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-destructive">
+            {error}
+          </div>
         )}
       </div>
       <Button className="w-full" onClick={capture} disabled={status !== "ready"}>

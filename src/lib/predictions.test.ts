@@ -7,11 +7,13 @@ describe("parsePredictions", () => {
       images: [
         {
           shape: [480, 640],
-          results: [{ class: 0, name: "face", confidence: 0.91, box: { x1: 10, y1: 20, x2: 110, y2: 140 } }],
+          results: [
+            { class: 0, name: "face", confidence: 0.91, box: { x1: 10, y1: 20, x2: 110, y2: 140 } },
+          ],
         },
       ],
     };
-    const [p] = parsePredictions(raw);
+    const p = parsePredictions(raw)[0]!;
     expect(p.name).toBe("face");
     expect(p.confidence).toBe(0.91);
     expect(p.box).toEqual({ x1: 10, y1: 20, x2: 110, y2: 140 });
@@ -22,8 +24,12 @@ describe("parsePredictions", () => {
   });
 
   it("scales normalized boxes to the image size", () => {
-    const raw = { images: [{ results: [{ name: "face", confidence: 0.5, box: { x1: 0.1, y1: 0.2, x2: 0.5, y2: 1 } }] }] };
-    const [p] = parsePredictions(raw, { width: 1000, height: 500 });
+    const raw = {
+      images: [
+        { results: [{ name: "face", confidence: 0.5, box: { x1: 0.1, y1: 0.2, x2: 0.5, y2: 1 } }] },
+      ],
+    };
+    const p = parsePredictions(raw, { width: 1000, height: 500 })[0]!;
     expect(p.box).toEqual({ x1: 100, y1: 100, x2: 500, y2: 500 });
   });
 });

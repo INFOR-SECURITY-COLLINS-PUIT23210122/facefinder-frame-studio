@@ -17,7 +17,9 @@ export function AnnotatedImage({ src, natural, predictions, scanning, onLoad }: 
           src={src}
           alt="Selected photo"
           className="block max-h-[520px] w-auto max-w-full"
-          onLoad={(e) => onLoad({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+          onLoad={(e) =>
+            onLoad({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
+          }
         />
         {natural &&
           predictions.map((p) => {
@@ -29,7 +31,12 @@ export function AnnotatedImage({ src, natural, predictions, scanning, onLoad }: 
               <div
                 key={p.id}
                 className="detect-box pointer-events-none absolute"
-                style={{ left: `${left}%`, top: `${top}%`, width: `${width}%`, height: `${height}%` }}
+                style={{
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  width: `${width}%`,
+                  height: `${height}%`,
+                }}
               >
                 <span
                   className={`detect-label absolute left-[-2px] whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-semibold leading-none ${top < 6 ? "top-0" : "-top-5"}`}
