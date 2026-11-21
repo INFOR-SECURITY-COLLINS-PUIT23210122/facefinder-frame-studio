@@ -5,11 +5,13 @@ type Props = {
   natural: { width: number; height: number } | null;
   predictions: Prediction[];
   scanning?: boolean;
-  onLoad: (size: { width: number; height: number }) => void;
+  /** Prefix labels with #1, #2 … to match the AI explanation. */
+  numbered?: boolean;
+  onLoad?: (size: { width: number; height: number }) => void;
 };
 
 /** Image with boxes positioned in percentages of the original size, so they scale with the displayed image. */
-export function AnnotatedImage({ src, natural, predictions, scanning, onLoad }: Props) {
+export function AnnotatedImage({ src, natural, predictions, scanning, numbered, onLoad }: Props) {
   return (
     <div className="dot-grid flex items-center justify-center overflow-hidden rounded-lg border border-border">
       <div className="relative inline-block max-w-full">
@@ -18,11 +20,11 @@ export function AnnotatedImage({ src, natural, predictions, scanning, onLoad }: 
           alt="Selected photo"
           className="block max-h-[520px] w-auto max-w-full"
           onLoad={(e) =>
-            onLoad({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
+            onLoad?.({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
           }
         />
         {natural &&
-          predictions.map((p) => {
+          predictions.map((p, i) => {
             const left = (p.box.x1 / natural.width) * 100;
             const top = (p.box.y1 / natural.height) * 100;
             const width = ((p.box.x2 - p.box.x1) / natural.width) * 100;
@@ -41,6 +43,7 @@ export function AnnotatedImage({ src, natural, predictions, scanning, onLoad }: 
                 <span
                   className={`detect-label absolute left-[-2px] whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-semibold leading-none ${top < 6 ? "top-0" : "-top-5"}`}
                 >
+                  {numbered ? `#${i + 1} ` : ""}
                   {p.name} {formatPercent(p.confidence)}
                 </span>
               </div>

@@ -87,3 +87,9 @@ export async function renderForExplanation(src: string, predictions: Prediction[
   });
   return canvas.toDataURL("image/jpeg", 0.85);
 }
+
+/** Small JPEG copy of the photo (no boxes) for the browser-only history. */
+export async function makeThumbnail(src: string, maxSize = 480) {
+  const canvas = await renderAnnotated(src, [], { maxSize });
+  return canvas.toDataURL("image/jpeg", 0.7);
+}

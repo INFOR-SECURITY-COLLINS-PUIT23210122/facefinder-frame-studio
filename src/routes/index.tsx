@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   AlertCircle,
   Camera,
   Download,
+  History,
   ImageUp,
   Loader2,
   RotateCcw,
@@ -18,7 +19,7 @@ import { AnnotatedImage } from "@/components/face/AnnotatedImage";
 import { CameraCapture } from "@/components/face/CameraCapture";
 import { ExplainPanel } from "@/components/face/ExplainPanel";
 import { ImageDropzone } from "@/components/face/ImageDropzone";
-import { ThemeToggle } from "@/components/face/ThemeToggle";
+import { AppHeader } from "@/components/face/AppHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { downloadAnnotated } from "@/lib/annotate";
+import { downloadAnnotated, makeThumbnail } from "@/lib/annotate";
+import { attachExplanation, createRunEntry, saveRun } from "@/lib/history";
 import { predict } from "@/lib/predict.functions";
 import {
   filterByConfidence,
@@ -64,7 +66,7 @@ export const Route = createFileRoute("/")({
 });
 
 const PRIVACY_NOTICE =
-  "Images are sent to a third-party API for analysis and are not stored by this app.";
+  "Images are sent to a third-party API for analysis. A small copy of each photo is kept only in this browser for your history — this app never stores photos on a server.";
 
 type Status = "idle" | "loading" | "done" | "error";
 
@@ -81,6 +83,7 @@ function Index() {
   const [rawJson, setRawJson] = useState<string | null>(null);
   const [threshold, setThreshold] = useState(0.25);
   const [downloading, setDownloading] = useState(false);
+  const [runId, setRunId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!file) {
@@ -102,6 +105,7 @@ function Index() {
     setError(null);
     setPredictions([]);
     setRawJson(null);
+    setRunId(null);
   };
 
   const selectFile = (f: File, from: "upload" | "camera") => {
@@ -123,6 +127,7 @@ function Index() {
     setError(null);
     setPredictions([]);
     setRawJson(null);
+    setRunId(null);
     try {
       const fd = new FormData();
       fd.append("image", file, file.name);
@@ -135,8 +140,24 @@ function Index() {
       const raw: unknown = JSON.parse(res.rawText);
       console.log("[Face Prediction] raw API response:", raw);
       setRawJson(JSON.stringify(raw, null, 2));
-      setPredictions(parsePredictions(raw, natural ?? undefined));
+      const parsed = parsePredictions(raw, natural ?? undefined);
+      setPredictions(parsed);
       setStatus("done");
+      if (natural && preview) {
+        // Saved only in this browser: results plus a small photo copy.
+        const thumbnail = await makeThumbnail(preview).catch(() => null);
+        const entry = createRunEntry({
+          fileName: file.name,
+          source,
+          width: natural.width,
+          height: natural.height,
+          thumbnail,
+          threshold,
+          predictions: parsed,
+        });
+        saveRun(entry);
+        setRunId(entry.id);
+      }
     } catch (e) {
       console.error("[Face Prediction] predict failed", e);
       setStatus("error");
@@ -158,24 +179,10 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <ScanFace className="size-5" />
-            </span>
-            <div>
-              <h1 className="text-lg font-semibold leading-tight">Face Prediction</h1>
-              <p className="text-xs text-muted-foreground">
-                Face detection with your Ultralytics model
-              </p>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
+        <h1 className="sr-only">Face Prediction</h1>
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Left: image input */}
           <section className="panel flex flex-col gap-4 p-5" aria-label="Image">
@@ -380,7 +387,24 @@ function Index() {
                     natural={natural}
                     predictions={visible}
                     threshold={threshold}
+                    onExplained={(explanation, meta) => {
+                      if (runId)
+                        attachExplanation(runId, {
+                          explanation,
+                          ...meta,
+                          createdAt: new Date().toISOString(),
+                        });
+                    }}
                   />
+                )}
+
+                {runId && (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <History className="size-3.5" /> Saved to your history in this browser.
+                    <Link to="/history" className="font-medium text-primary hover:underline">
+                      View history
+                    </Link>
+                  </p>
                 )}
 
                 {rawJson && (
