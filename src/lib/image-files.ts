@@ -22,8 +22,13 @@ export function pickBatchFiles<F extends FileLike>(files: F[], max = MAX_BATCH) 
   const rejected: Rejected[] = [];
   for (const f of files) {
     const err = validateImage(f);
-    if (err) rejected.push({ name: f.name, reason: err.includes("10 MB") ? "Larger than 10 MB" : "Not a JPG or PNG" });
-    else if (accepted.length >= max) rejected.push({ name: f.name, reason: `Over the ${max}-photo limit` });
+    if (err)
+      rejected.push({
+        name: f.name,
+        reason: err.includes("10 MB") ? "Larger than 10 MB" : "Not a JPG or PNG",
+      });
+    else if (accepted.length >= max)
+      rejected.push({ name: f.name, reason: `Over the ${max}-photo limit` });
     else accepted.push(f);
   }
   return { accepted, rejected };

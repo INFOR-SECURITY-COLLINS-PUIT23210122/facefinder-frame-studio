@@ -21,7 +21,10 @@ describe("batch photo selection", () => {
   });
 
   it("skips photos that aren't JPG or PNG", () => {
-    const { accepted, rejected } = pickBatchFiles([jpg("a.jpg"), { name: "b.gif", type: "image/gif", size: 10 }]);
+    const { accepted, rejected } = pickBatchFiles([
+      jpg("a.jpg"),
+      { name: "b.gif", type: "image/gif", size: 10 },
+    ]);
     expect(accepted.map((f) => f.name)).toEqual(["a.jpg"]);
     expect(rejected).toEqual([{ name: "b.gif", reason: "Not a JPG or PNG" }]);
   });

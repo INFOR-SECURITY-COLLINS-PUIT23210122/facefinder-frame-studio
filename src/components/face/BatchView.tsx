@@ -24,7 +24,12 @@ import { downloadAnnotated, makeThumbnail } from "@/lib/annotate";
 import { createRunEntry, saveRun } from "@/lib/history";
 import { batchSummary, runPool, type BatchStatus, type Rejected } from "@/lib/image-files";
 import { predict } from "@/lib/predict.functions";
-import { filterByConfidence, formatPercent, parsePredictions, type Prediction } from "@/lib/predictions";
+import {
+  filterByConfidence,
+  formatPercent,
+  parsePredictions,
+  type Prediction,
+} from "@/lib/predictions";
 
 type Item = {
   id: string;
@@ -127,7 +132,11 @@ export function BatchView({ files, rejected, onClose }: Props) {
     setDownloading(it.id);
     try {
       const base = it.file.name.replace(/\.[^.]+$/, "");
-      await downloadAnnotated(it.url, filterByConfidence(it.predictions, threshold), `${base}-annotated.png`);
+      await downloadAnnotated(
+        it.url,
+        filterByConfidence(it.predictions, threshold),
+        `${base}-annotated.png`,
+      );
     } catch {
       update(it.id, { error: "The annotated image couldn't be created." });
     } finally {
@@ -191,7 +200,10 @@ export function BatchView({ files, rejected, onClose }: Props) {
           <Stat label="Faces found" value={String(summary.faces)} />
           <Stat label="No face" value={String(summary.withoutFaces)} />
           <div className="col-span-3">
-            <Progress value={summary.total ? (finished / summary.total) * 100 : 0} aria-label="Progress" />
+            <Progress
+              value={summary.total ? (finished / summary.total) * 100 : 0}
+              aria-label="Progress"
+            />
           </div>
         </div>
         <div className="space-y-3">
@@ -218,7 +230,10 @@ export function BatchView({ files, rejected, onClose }: Props) {
         {items.map((it, i) => {
           const visible = filterByConfidence(it.predictions, threshold);
           return (
-            <li key={it.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3">
+            <li
+              key={it.id}
+              className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3"
+            >
               <AnnotatedImage
                 src={it.url}
                 natural={it.natural}
