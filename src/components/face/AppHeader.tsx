@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { History, ScanFace } from "lucide-react";
 
+import { BrandMark } from "@/components/face/BrandMark";
 import { ThemeToggle } from "@/components/face/ThemeToggle";
 
 const navLink =
@@ -10,18 +11,18 @@ export function AppHeader() {
   return (
     <header className="border-b border-border">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <ScanFace className="size-5" />
-          </span>
-          <span>
-            <span className="block text-lg font-semibold leading-tight">Face Prediction</span>
-            <span className="hidden text-xs text-muted-foreground sm:block">
+        <Link to="/" className="flex min-w-0 items-center gap-3">
+          <BrandMark />
+          <span className="min-w-0">
+            <span className="block truncate font-display text-lg font-semibold leading-tight">
+              Face Insight Studio
+            </span>
+            <span className="hidden truncate text-xs text-muted-foreground sm:block">
               Face detection with your Ultralytics model
             </span>
           </span>
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <nav className="flex items-center gap-1" aria-label="Main">
             <Link
               to="/"

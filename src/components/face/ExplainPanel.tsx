@@ -52,7 +52,7 @@ export function ExplainPanel({ src, natural, predictions, threshold, onExplained
         onExplained?.(res.explanation, meta);
       } else setError(res.error);
     } catch (e) {
-      console.error("[Face Prediction] explain failed", e);
+      console.error("[Face Insight Studio] explain failed", e);
       setError("The AI explanation couldn't be loaded. Please try again.");
     } finally {
       setLoading(false);

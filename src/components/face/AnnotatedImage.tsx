@@ -8,17 +8,27 @@ type Props = {
   /** Prefix labels with #1, #2 … to match the AI explanation. */
   numbered?: boolean;
   onLoad?: (size: { width: number; height: number }) => void;
+  /** Max height of the photo (Tailwind class). */
+  heightClass?: string;
 };
 
 /** Image with boxes positioned in percentages of the original size, so they scale with the displayed image. */
-export function AnnotatedImage({ src, natural, predictions, scanning, numbered, onLoad }: Props) {
+export function AnnotatedImage({
+  src,
+  natural,
+  predictions,
+  scanning,
+  numbered,
+  onLoad,
+  heightClass = "max-h-[520px]",
+}: Props) {
   return (
     <div className="dot-grid flex items-center justify-center overflow-hidden rounded-lg border border-border">
       <div className="relative inline-block max-w-full">
         <img
           src={src}
           alt="Selected photo"
-          className="block max-h-[520px] w-auto max-w-full"
+          className={`block w-auto max-w-full ${heightClass}`}
           onLoad={(e) =>
             onLoad?.({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
           }

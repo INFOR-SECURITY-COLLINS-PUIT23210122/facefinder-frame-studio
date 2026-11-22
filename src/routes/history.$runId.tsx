@@ -23,12 +23,12 @@ import { filterByConfidence, formatPercent } from "@/lib/predictions";
 export const Route = createFileRoute("/history/$runId")({
   head: () => ({
     meta: [
-      { title: "Past run — Face Prediction" },
+      { title: "Past run — Face Insight Studio" },
       {
         name: "description",
         content: "A saved face detection run with its boxes, scores and AI explanation.",
       },
-      { property: "og:title", content: "Past run — Face Prediction" },
+      { property: "og:title", content: "Past run — Face Insight Studio" },
       {
         property: "og:description",
         content: "A saved face detection run with its boxes, scores and AI explanation.",
